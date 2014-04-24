@@ -1,6 +1,6 @@
 define('views/homepage',
-    ['format', 'jquery', 'l10n', 'log', 'models', 'newsletter', 'textoverflowclamp', 'underscore', 'urls', 'utils', 'utils_local'],
-    function(format, $, l10n, log, models, newsletter, clamp, _, urls, utils, utils_local) {
+    ['format', 'l10n', 'log', 'models', 'urls', 'utils_local'],
+    function(format, l10n, log, models, urls, utils_local) {
     'use strict';
 
     var gettext = l10n.gettext;
@@ -26,17 +26,21 @@ define('views/homepage',
             delete params.src;
         }
 
-        var endpoint = urls.api.unsigned.url('category', [''], params);
-        utils_local.checkOnline().fail(function() {
-            endpoint = '/hearth/db/preloaded.json';
+        utils_local.checkOnline().then(function() {
+            builder.start('category_yogafire/main.html', {
+                endpoint: urls.api.unsigned.url('category', [''], params),
+                sort: params.sort,
+                app_cast: app_models.cast
+            });
+        }).fail(function() {
+            endpoint = ;
+            builder.start('category_yogafire/main.html', {
+                endpoint: '/db/preloaded.json',
+                sort: params.sort,
+                app_cast: app_models.cast
+            });
         });
 
-        builder.start('category_yogafire/main.html', {
-            endpoint: endpoint,
-            sort: params.sort,
-            app_cast: app_models.cast
-        }).done(function() {
-            newsletter.init();
-        });
+
     };
 });
